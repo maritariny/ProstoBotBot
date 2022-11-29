@@ -1,3 +1,6 @@
 # Project exclude paths
 /common-rabbitmq/target/
 /dispatcher/target/
+/dispatcher/src/main/resources/application.properties
+/logs/
+/node/src/main/resources/application.properties
