@@ -1,10 +1,7 @@
 package ru.malm.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,7 +14,10 @@ import javax.persistence.*;
 // @Data, @Builder, @NoArgsConstructor, @AllArgsConstructor - аннотации lombok
 // Позволяют сгенерировать геттеры, сеттеры. Внутренний клас Builder для удобного создания объекта класса (паттерн)
 // Аннотации с args позволяют сгенерировать конструкторы по умолчанию (без параметров и со всеми параметрами)
-@Data
+//@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "id")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

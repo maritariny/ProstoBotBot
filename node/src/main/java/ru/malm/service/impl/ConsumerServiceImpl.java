@@ -15,11 +15,6 @@ import static ru.malm.model.RabbitQueue.*;
 @Log4j
 public class ConsumerServiceImpl implements ConsumerService {
 
-    //private final ProducerService producerService;
-
-   // public ConsumerServiceImpl(ProducerService producerService) {
-    //    this.producerService = producerService;
-   // }
     private final MainService mainService;
 
     public ConsumerServiceImpl(MainService mainService) {
@@ -31,12 +26,6 @@ public class ConsumerServiceImpl implements ConsumerService {
     public void consumeTextMessageUpdates(Update update) {
         log.debug("NODE: Text message is received");
         mainService.processTextMessage(update);
-
-//        var message = update.getMessage();
-//        var sendMessage = new SendMessage();
-//        sendMessage.setChatId(message.getChatId().toString());
-//        sendMessage.setText("Hello from NODE");
-//        producerService.producerAnswer(sendMessage);
     }
 
     @Override
