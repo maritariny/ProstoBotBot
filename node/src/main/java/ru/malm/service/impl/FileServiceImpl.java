@@ -17,6 +17,8 @@ import ru.malm.entity.AppPhoto;
 import ru.malm.entity.BinaryContent;
 import ru.malm.exceptions.UploadFileException;
 import ru.malm.service.FileService;
+import ru.malm.service.enums.LinkType;
+import ru.malm.utils.CryptoTool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,14 +34,18 @@ public class FileServiceImpl implements FileService {
     private String fileInfoUri;
     @Value("${service.file_storage.uri}")
     private String fileStorageUri;
+    @Value("${link.address}")
+    private String linkAddress;
     private final AppDocumentDAO appDocumentDAO; // Внедрение бинов
     private final AppPhotoDAO appPhotoDAO; // Внедрение бина для сохранения объекта фото в базу
     private final BinaryContentDAO binaryContentDAO;
+    private final CryptoTool cryptoTool; // Внедрение бина для шифрования номера файла в ссылке
 
-    public FileServiceImpl(AppDocumentDAO appDocumentDAO, AppPhotoDAO appPhotoDAO, BinaryContentDAO binaryContentDAO) {
+    public FileServiceImpl(AppDocumentDAO appDocumentDAO, AppPhotoDAO appPhotoDAO, BinaryContentDAO binaryContentDAO, CryptoTool cryptoTool) {
         this.appDocumentDAO = appDocumentDAO;
         this.appPhotoDAO = appPhotoDAO;
         this.binaryContentDAO = binaryContentDAO;
+        this.cryptoTool = cryptoTool;
     }
 
     @Override
@@ -59,7 +65,9 @@ public class FileServiceImpl implements FileService {
     @Override
     public AppPhoto processPhoto(Message telegramMessage) {
         //TODO пока что обрабатывается только одно фото в сообщении
-        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(0);
+        var photoSizeCount = telegramMessage.getPhoto().size();
+        var photoIndex = photoSizeCount > 1 ? photoSizeCount - 1: 0;
+        PhotoSize telegramPhoto = telegramMessage.getPhoto().get(photoIndex);
         String fileId = telegramPhoto.getFileId();
         ResponseEntity<String> response = getFilePath(fileId); // http get запрос к серверу телеграма
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -137,5 +145,11 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    @Override
+    public String generateLink(Long docId, LinkType linkType) {
+        // получение хэша и вставка в ссылку вместо номера id документа/фото
+        var hash = cryptoTool.hashOf(docId);
+        return "http://" + linkAddress + "/" + linkType + "?id=" + hash;
+    }
 
 }
